@@ -94,12 +94,8 @@ const update = async () => {
 const destroy = async () => {
   const attributes = await prompt([issue.id])
 
-  const result = await api(`issues/${attributes.id}`, 'delete')
-
-  if (
-    result &&
-    (await confirm('Are you sure you want to destroy this issue?'))
-  ) {
+  if (await confirm('Are you sure you want to destroy this issue?')) {
+    const result = await api(`issues/${attributes.id}`, 'delete')
     console.log('Issue destroyed.')
   } else {
     console.log('Cancelled destroy.')
