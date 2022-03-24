@@ -2,6 +2,9 @@
 
 const yargs = require('yargs')
 const inquirer = require('inquirer')
+const axios = require('axios')
+
+const apiUrl = 'http://localhost:3000'
 
 const issue = {
   id: {
@@ -10,8 +13,8 @@ const issue = {
     type: 'string',
   },
   name: {
-    message: 'Name?',
-    name: 'name',
+    message: 'Title?',
+    name: 'title',
     type: 'string',
   },
   description: {
@@ -21,7 +24,7 @@ const issue = {
   },
 }
 
-const prompt = async (attributes) => await inquirer.prompt(attributes)
+const prompt = (attributes) => inquirer.prompt(attributes)
 
 const confirm = async (message) => {
   const { confirm } = await inquirer.prompt([
@@ -35,23 +38,54 @@ const confirm = async (message) => {
   return confirm
 }
 
+const api = async (path, method = 'get', data = null) => {
+  try {
+    const response = await axios({
+      method,
+      data,
+      headers: { Accept: 'application/json' },
+      url: `${apiUrl}/${path}`,
+      responseType: 'json',
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.response.statusText)
+
+    return false
+  }
+}
+
 const create = async () => {
   const attributes = await prompt([issue.name, issue.description])
 
-  console.log('Issue created: ', attributes)
+  const result = await api('issues', 'post', { issue: attributes })
+
+  if (result) console.log('Issue created: ', result)
 }
 
 const show = async () => {
   const attributes = await prompt([issue.id])
 
-  console.log('Issue: ', attributes)
+  if (attributes.id) {
+    const result = await api(`issues/${attributes.id}`)
+
+    if (result) console.log('Issue: ', result)
+  }
 }
 
 const update = async () => {
   const attributes = await prompt([issue.id, issue.name, issue.description])
 
-  if (await confirm('Are you sure you want to update this issue?')) {
-    console.log('Issue updated: ', attributes)
+  const result = await api(`issues/${attributes.id}`, 'patch', {
+    issue: attributes,
+  })
+
+  if (
+    result &&
+    (await confirm('Are you sure you want to update this issue?'))
+  ) {
+    console.log('Issue updated: ', result)
   } else {
     console.log('Cancelled update.')
   }
@@ -60,7 +94,12 @@ const update = async () => {
 const destroy = async () => {
   const attributes = await prompt([issue.id])
 
-  if (await confirm('Are you sure you want to destroy this issue?')) {
+  const result = await api(`issues/${attributes.id}`, 'delete')
+
+  if (
+    result &&
+    (await confirm('Are you sure you want to destroy this issue?'))
+  ) {
     console.log('Issue destroyed.')
   } else {
     console.log('Cancelled destroy.')

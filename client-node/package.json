@@ -12,6 +12,7 @@
     "dcn": "./bin/index.js"
   },
   "dependencies": {
+    "axios": "^0.26.1",
     "inquirer": "^8.2.1",
     "yargs": "^17.4.0"
   }

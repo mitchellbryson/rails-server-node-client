@@ -1,4 +1,6 @@
 class IssuesController < ApplicationController
+  protect_from_forgery with: :null_session
+  
   before_action :set_issue, only: %i[ show edit update destroy ]
 
   # GET /issues or /issues.json
