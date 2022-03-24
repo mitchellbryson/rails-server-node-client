@@ -77,14 +77,10 @@ const show = async () => {
 const update = async () => {
   const attributes = await prompt([issue.id, issue.name, issue.description])
 
-  const result = await api(`issues/${attributes.id}`, 'patch', {
-    issue: attributes,
-  })
-
-  if (
-    result &&
-    (await confirm('Are you sure you want to update this issue?'))
-  ) {
+  if (await confirm('Are you sure you want to update this issue?')) {
+    const result = await api(`issues/${attributes.id}`, 'patch', {
+      issue: attributes,
+    })
     console.log('Issue updated: ', result)
   } else {
     console.log('Cancelled update.')
