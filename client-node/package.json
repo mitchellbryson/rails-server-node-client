@@ -10,5 +10,9 @@
   "license": "ISC",
   "bin": {
     "dcn": "./bin/index.js"
+  },
+  "dependencies": {
+    "inquirer": "^8.2.1",
+    "yargs": "^17.4.0"
   }
 }
